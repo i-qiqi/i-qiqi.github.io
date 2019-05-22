@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zn-Hans">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1" />
+  <meta name="author" content="dotZero">
+  <meta name="description" content="Zookeeper安装 1. Standalone mode get-started 2. Doker mode 下载镜像 bash //latest docker pull zookeeper 启动ZK镜像 docker run --name my_zookeeper -d zookeeper:latest # 查看运行情况 docker logs -f my_zookeeper 使用ZK命令行客户端连接ZK # 当我们执行了这个命令后, 就可以像正常使用 ZK 命令行客户端一样操作 ZK 服务了 docker run -it --rm --link my_zookeeper:zookeeper zookeeper zkCli.sh -server zookeeper # 命令含义 1&gt; 启动一个 zookeeper 镜像, 并运行这个镜像内的 zkCli.sh 命令, 命令参数是 &quot;-server zookeeper&quot; 2&gt; 将我们先前启动的名为 my_zookeeper 的容器连接(link) 到我们新建的这个容器上, 并将其主机名命名为 zookeeper Docker 的 link 机制??? Zoo">
+  
+  <meta property="og:title" content="Zookeeper入门" />
+<meta property="og:description" content="Zookeeper安装 1. Standalone mode get-started 2. Doker mode 下载镜像 bash //latest docker pull zookeeper 启动ZK镜像 docker run --name my_zookeeper -d zookeeper:latest # 查看运行情况 docker logs -f my_zookeeper 使用ZK命令行客户端连接ZK # 当我们执行了这个命令后, 就可以像正常使用 ZK 命令行客户端一样操作 ZK 服务了 docker run -it --rm --link my_zookeeper:zookeeper zookeeper zkCli.sh -server zookeeper # 命令含义 1&gt; 启动一个 zookeeper 镜像, 并运行这个镜像内的 zkCli.sh 命令, 命令参数是 &quot;-server zookeeper&quot; 2&gt; 将我们先前启动的名为 my_zookeeper 的容器连接(link) 到我们新建的这个容器上, 并将其主机名命名为 zookeeper Docker 的 link 机制??? Zoo" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://i-qiqi.github.io/blog/2019-05/zookeeper%E5%85%A5%E9%97%A8/" /><meta property="article:published_time" content="2018-08-04T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2018-08-07T00:00:00&#43;00:00"/>
+
+
+
+  <title>
+  
+       Zookeeper入门 | dotZero 
+  
+  </title>
+
+  <link rel="canonical" href="https://i-qiqi.github.io/blog/2019-05/zookeeper%E5%85%A5%E9%97%A8/">
+
+  
+  
+
+  
+  <link href="https://i-qiqi.github.io/css/vendors-extensions/fontawesome/all.min.css" rel="stylesheet">
+
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Ubuntu+Mono:400,400i,700,700i|Raleway:300,400,500,600">
+  <link href="https://i-qiqi.github.io/css/font.css" rel="stylesheet"> 
+    
+  
+  <link href="https://i-qiqi.github.io/css/vendors/bootstrap4/bootstrap.min.css" rel="stylesheet">
+  <link href="https://i-qiqi.github.io/css/vendors-extensions/mdb/mdb.min.css" rel="stylesheet"> 
+  <link href="https://i-qiqi.github.io/css/vendors/mdb/style.min.css" rel="stylesheet"> 
+  <link href="https://i-qiqi.github.io/css/main.css" rel="stylesheet">
+
+
+  
+  <link rel="shortcut icon"
+  
+      href="https://i-qiqi.github.io/img/zheng.png"
+  
+  >
+
+
+  
+  
+
+  <style type="text/css">
+      @media (min-width: 800px) and (max-width: 850px) {
+              .navbar:not(.top-nav-collapse) {
+                  background: #1C2331!important;
+              }
+          }
+  </style>
+
+
+  
+    
+    <link rel="stylesheet" href="https://i-qiqi.github.io/js/vendors/katex/katex.min.css">
+  
+  
+
+  
+    
+    <link rel="stylesheet" href="https://i-qiqi.github.io/css/vendors/highlight/github-gist.css">
+  
+
+</head>
+
+  <body class="bg-light" data-spy="scroll" data-target="#page-scrollspy" data-offset="90">
+  
+    
+    
+
+    
+      
+
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
+    <div class="container">
+
+      
+      <a class="navbar-brand" href="https://i-qiqi.github.io/">
+          
+        <img class="avatar" src="https://i-qiqi.github.io/img/zheng.png" style="width: 40px!important;height: auto;"  class="d-inline-block align-top" alt="" >
+        
+        <strong> dotZero</strong>
+      </a>
+
+      
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        
+        <ul class="navbar-nav mr-auto ">
+          <li class="nav-item ">
+            <a class="nav-link" href="https://i-qiqi.github.io/">Home</a>
+          </li>
+          
+            <li class="nav-item ">
+              <a class="nav-link" href="https://i-qiqi.github.io/blog/" >Blog  </a>
+            </li>
+
+          
+            <li class="nav-item ">
+              <a class="nav-link" href="https://i-qiqi.github.io/moment/" >Moment  </a>
+            </li>
+
+          
+            <li class="nav-item ">
+              <a class="nav-link" href="https://i-qiqi.github.io/about/" >About  </a>
+            </li>
+
+          
+        </ul>
+
+      </div>
+
+    </div>
+  </nav>
+  
+ 
+      
+ 
+
+
+
+
+
+
+<div id="site-header" class="carousel slide carousel-fade" data-ride="carousel" style="height: 18rem;" >  
+
+  
+  
+  
+
+  
+  <div class="carousel-inner" role="listbox">
+    
+      
+
+        
+        <div class="carousel-item active">
+          <div class="view" style="background-image: url('https://i-qiqi.github.io/img/header-slides/raw_1515691746.jpg'); background-repeat: no-repeat; background-size: cover;">
+
+            
+            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+              
+              
+              
+
+            </div>
+            
+
+          </div>
+        </div>
+        
+      
+    
+      
+
+        
+        <div class="carousel-item">
+          <div class="view" style="background-image: url('https://i-qiqi.github.io/img/header-slides//raw_1515847341.jpg'); background-repeat: no-repeat; background-size: cover;">
+
+            
+            <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
+
+            
+
+            </div>
+            
+
+          </div>
+        </div>
+        
+      
+    
+
+  
+  </div>
+  
+
+  
+  <div class="carousel-content text-center white-text wow fadeIn">
+    <div class="row mx-0 headfont mt-3 pt-4">
+      
+      <div class="col-12 col-sm-5 align-middle">
+        <a href="https://i-qiqi.github.io/">
+          
+            <img class="pull-right avatar avatar-md" src="https://i-qiqi.github.io/img/profile.jpg" alt="" >
+          
+        </a>
+      </div>
+      
+      <div class="col-12 col-sm-7 text-left pl-2">
+        <a href="https://i-qiqi.github.io/">
+          <h1 class="mb-2 h1" style="font-weight: 300;" >
+            <strong>dotZero</strong>
+          </h1>
+        </a>
+        
+
+             
+        <div class="mt-2" style="font-size: 1rem; color: white;">
+            
+              <a href="//github.com/you" target="_blank" rel="noopener"><i class="fab fa-github pr-1" aria-hidden="true"></i></a>    
+            
+            
+              <a href="//linkedin.com/in/you" target="_blank" rel="noopener"><i class="fab fa-linkedin pr-1" aria-hidden="true"></i></a>
+            
+
+            
+              <a href="//facebook.com/you" target="_blank" rel="noopener"><i class="fab fa-facebook pr-1" aria-hidden="true"></i></a>
+            
+
+            
+            <a href="//google.com/you" target="_blank" rel="noopener"><i class="fab fa-google-plus pr-1" aria-hidden="true"></i></a>
+            
+
+            
+                <a href="//twitter.com/you" target="_blank" rel="noopener"><i class="fab fa-twitter pr-1" aria-hidden="true"></i></a>
+            
+
+            
+                <a href="//instagram.com/you" target="_blank" rel="noopener"><i class="fab fa-instagram pr-1" aria-hidden="true"></i></a>
+            
+    
+            
+                <a href="//px500" target="_blank" rel="noopener"><i class="fab fa-500px pr-1" aria-hidden="true"></i></a>
+            
+    
+        
+            
+                <a href="mailto:you@email.com"><i class="far fa-envelope-open pr-1" aria-hidden="true"></i></a>
+            
+    
+            
+
+            
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  
+  
+  
+
+</div>
+  
+    
+
+    
+  
+  <main class="post-main-wrapper">
+    
+    
+    <div class="row">
+
+      
+
+      
+      <div class="col-md-10">
+      
+
+        
+        <div class="z-depth-1  post-wrapper white-bg single-post">
+
+          <div class="post-header text-center" >
+  <ul class="post-meta li-x">
+    
+      
+        <li><a href="https://i-qiqi.github.io/categories/%E6%AF%95%E8%AE%BE"><i class="fas fa-folder-open pr-1" aria-hidden="true"></i> 毕设 </a></li>
+      
+    
+    
+      
+        <li><a href="https://i-qiqi.github.io/series/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%B0%83"><i class="fas fa-bookmark pr-1" aria-hidden="true"></i>分布式协调</a></li>
+      
+    
+  </ul>
+
+  <div class="px-4 post-heading">Zookeeper入门</div>
+
+  <ul class="post-meta li-x mt-1">
+    
+      <li>May 7, 2019</li>
+    
+
+    
+      <li class="middot"></li>
+      <li>One minute read</li>
+    
+  </ul>
+  
+    <div class="view">
+      <img src="https://i-qiqi.github.io/images/blog/2018-08/test4.jpg" />
+    </div>
+  
+
+</div>
+
+
+          <div class="post-content markdown">
+            
+
+<h2 id="zookeeper安装">Zookeeper安装</h2>
+
+<h3 id="1-standalone-mode">1. Standalone mode</h3>
+
+<ul>
+<li><a href="https://zookeeper.apache.org/doc/r3.4.9/zookeeperStarted.html">get-started</a></li>
+</ul>
+
+<h3 id="2-doker-mode">2. Doker mode</h3>
+
+<ul>
+<li>下载镜像
+<code>bash
+//latest
+docker pull zookeeper
+</code></li>
+
+<li><p>启动ZK镜像</p>
+
+<pre><code class="language-bash">docker run --name my_zookeeper -d zookeeper:latest
+# 查看运行情况
+docker logs -f my_zookeeper
+</code></pre></li>
+
+<li><p>使用ZK命令行客户端连接ZK</p>
+
+<pre><code># 当我们执行了这个命令后, 就可以像正常使用 ZK 命令行客户端一样操作 ZK 服务了
+docker run -it --rm --link my_zookeeper:zookeeper zookeeper zkCli.sh -server zookeeper
+# 命令含义
+1&gt; 启动一个 zookeeper 镜像, 并运行这个镜像内的 zkCli.sh 命令, 命令参数是 &quot;-server zookeeper&quot;
+2&gt; 将我们先前启动的名为 my_zookeeper 的容器连接(link) 到我们新建的这个容器上, 并将其主机名命名为 zookeeper
+</code></pre>
+
+<ul>
+<li><strong><font color="red">Docker 的 link 机制???</font></strong></li>
+</ul></li>
+</ul>
+
+<h2 id="zookeeper使用">Zookeeper使用</h2>
+
+<h2 id="reference">Reference</h2>
+
+<p>[1] <a href="https://www.cnblogs.com/kingkoo/p/8732448.html">使用 Docker 一步搞定 ZooKeeper 集群的搭建</a></p>
+
+<h2 id="版本控制">版本控制</h2>
+
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Action</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>1.0</td>
+<td>Init 静态页面路线</td>
+<td>2018-08-05</td>
+</tr>
+</tbody>
+</table>
+
+          </div>
+
+          
+          <div class="row">
+            <div class="col-md-8">
+            
+              <div class="mb-5">
+                
+<div class="li-x div-x post-meta">
+  <li class="pr-0"><a href="https://i-qiqi.github.io/tags/"><i class="fas fa-tags"></i></a></li>
+  <div class="tags-sm">
+    
+      <li><a href="https://i-qiqi.github.io/tags/zookeeper" role="button">zookeeper </a></li>
+      
+    
+  </div>
+</div>
+              </div>
+            
+            </div>
+            
+          </div>
+          
+
+          
+          <div class="row pt-3">
+            <div class="col-md-6">
+              
+                <a href=https://i-qiqi.github.io/blog/2019-04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/ class="post-meta">Previous
+                  <div class="pt-2 pb-5 d-flex">
+                    <i class="fas fa-angle-left text-grey font-weight-bold mr-2 active-color"></i>
+                    <span>计算机网络</span>
+                  </div>
+                </a>
+              
+            </div>
+            
+            <div class="col-md-6 text-right" >
+              
+            </div>
+          </div>
+
+          
+
+        </div>
+        
+
+      </div>
+      
+
+      
+	
+	
+	
+	
+		
+		
+		
+	
+
+		
+		<div class="col-md-2 pl-0">
+
+			
+			<div id="page-scrollspy" class="toc-nav">
+				
+				<ul class="nav nav-pills ml-0">
+					
+					<li class="nav-item pb-3 text-center">
+						<span class="font-weight-bold mb-2">- CATALOG - </span>
+					</li>
+
+					
+						
+						
+							
+								
+								
+									<ul class="nav">
+								
+								
+
+										<li class="nav-item">
+						 					<a class="nav-link" href="#zookeeper%e5%ae%89%e8%a3%85">
+												 Zookeeper安装
+											</a>
+										</li>
+						 
+								
+								
+									</ul>
+								
+							
+						
+				 
+						
+						
+							
+								
+								
+									<ul class="nav">
+								
+									<ul class="nav">
+								
+								
+
+										<li class="nav-item">
+						 					<a class="nav-link" href="#1-standalone-mode">
+												 1. Standalone mode
+											</a>
+										</li>
+						 
+								
+								
+									</ul>
+								
+									</ul>
+								
+							
+						
+				 
+						
+						
+							
+								
+								
+									<ul class="nav">
+								
+									<ul class="nav">
+								
+								
+
+										<li class="nav-item">
+						 					<a class="nav-link" href="#2-doker-mode">
+												 2. Doker mode
+											</a>
+										</li>
+						 
+								
+								
+									</ul>
+								
+									</ul>
+								
+							
+						
+				 
+						
+						
+							
+								
+								
+									<ul class="nav">
+								
+								
+
+										<li class="nav-item">
+						 					<a class="nav-link" href="#zookeeper%e4%bd%bf%e7%94%a8">
+												 Zookeeper使用
+											</a>
+										</li>
+						 
+								
+								
+									</ul>
+								
+							
+						
+				 
+						
+						
+							
+								
+								
+									<ul class="nav">
+								
+								
+
+										<li class="nav-item">
+						 					<a class="nav-link" href="#reference">
+												 Reference
+											</a>
+										</li>
+						 
+								
+								
+									</ul>
+								
+							
+						
+				 
+						
+						
+							
+								
+								
+									<ul class="nav">
+								
+								
+
+										<li class="nav-item">
+						 					<a class="nav-link" href="#%e7%89%88%e6%9c%ac%e6%8e%a7%e5%88%b6">
+												 版本控制
+											</a>
+										</li>
+						 
+								
+								
+									</ul>
+								
+							
+						
+				 
+
+				</ul>
+			</div>
+			
+
+		</div>
+		
+	
+
+    </div>
+    
+
+
+  </main>
+  
+
+
+    
+    
+
+<footer class="page-footer text-center font-small mt-4 wow fadeIn">
+
+
+  
+  <div class="pb-2 mt-5 pt-5">
+    
+      <a href="//github.com/you " target="_blank" rel="noopener"><i class="fab fa-github mr-3" aria-hidden="true"></i></a>    
+    
+    
+      <a href="//linkedin.com/in/you" target="_blank" rel="noopener"><i class="fab fa-linkedin-in mr-3" aria-hidden="true"></i></a>
+    
+
+    
+      <a href="//facebook.com/you" target="_blank" rel="noopener"><i class="fab fa-facebook-f mr-3" aria-hidden="true"></i></a>
+    
+
+    
+    <a href="//google.com/you" target="_blank" rel="noopener"><i class="fab fa-google-plus-g mr-3" aria-hidden="true"></i></a>
+    
+
+    
+        <a href="//twitter.com/you" target="_blank" rel="noopener"><i class="fab fa-twitter mr-3" aria-hidden="true"></i></a>
+    
+
+    
+        <a href="//instagram.com/you" target="_blank" rel="noopener"><i class="fab fa-instagram mr-3" aria-hidden="true"></i></a>
+    
+
+    
+        <a href="//px500" target="_blank" rel="noopener"><i class="fab fa-500px mr-3" aria-hidden="true"></i></a>
+    
+
+
+    
+        <a href="mailto:you@email.com"><i class="far fa-envelope-open mr-3" aria-hidden="true"></i></a>
+    
+
+    
+
+    
+
+  </div>
+  
+
+  
+  <div class="copyright py-4">
+    
+    <span>  2016 - 2019 &copy; | Theme <a href='https://github.com/orianna-zzo/AllinOne' target="_blank">AllinOne</a> by <a href='https://github.com/orianna-zzo' target="_blank">Orianna</a>  </span>
+  </div>
+  
+
+</footer>
+
+
+    
+
+
+
+
+
+
+<script type="text/javascript" src="https://i-qiqi.github.io/js/vendors/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="https://i-qiqi.github.io/js/vendors/jquery/jquery.smooth-scroll.min.js"></script>
+
+
+
+<script type="text/javascript" src="https://i-qiqi.github.io/js/vendors/popper.min.js"></script>
+<script type="text/javascript" src="https://i-qiqi.github.io/js/vendors/holder.min.js"></script>
+<script type="text/javascript" src="https://i-qiqi.github.io/js/vendors-extensions/bootstrap4/bootstrap.js" ></script>
+
+<script type="text/javascript" src="https://i-qiqi.github.io/js/vendors/mdb/mdb.min.js"></script>
+
+<script type="text/javascript" src="https://i-qiqi.github.io/js/main.js"></script>
+
+
+
+  
+  <script src="https://i-qiqi.github.io/js/vendors/highlight.pack.js"> </script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+ 
+  <script src="https://i-qiqi.github.io/js/vendors/katex/katex.min.js"> </script>
+  <script src="https://i-qiqi.github.io/js/vendors/katex/contrib/auto-render.min.js"></script>
+
+  <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          renderMathInElement(document.body);
+      });
+  </script>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  
+  new WOW().init();
+</script>
+
+
+
+
+  </body>
+</html>

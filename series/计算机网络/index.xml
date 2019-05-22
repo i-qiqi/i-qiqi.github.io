@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>计算机网络 on dotZero</title>
+    <link>https://i-qiqi.github.io/series/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/</link>
+    <description>Recent content in 计算机网络 on dotZero</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zn-Hans</language>
+    <lastBuildDate>Thu, 25 Apr 2019 14:04:59 +0800</lastBuildDate>
+    
+	<atom:link href="https://i-qiqi.github.io/series/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>计算机网络</title>
+      <link>https://i-qiqi.github.io/blog/2019-04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Thu, 25 Apr 2019 14:04:59 +0800</pubDate>
+      
+      <guid>https://i-qiqi.github.io/blog/2019-04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/</guid>
+      <description>ISO模型与协议 TCP连接建立 https://www.cnblogs.com/huangliang-hb/p/9923721.html 为什么是三次不是二次握手？ 为了防止失效的连接请求报文段突然又传送到主机B， B同意连接，并向A法会确认，可是A根本不理会，如果是2次，主机B以为已经连接成功，一直等待A发送数据，导致B的资源浪费。 TCP连接释放 4次挥手过程中，TIME_WAIT状态存在的理由 MSL： 指Max Segment Lifetime，即数据包在网络中的最大生存时间。每种TCP协议的实现方法均要指定一个合适的M</description>
+    </item>
+    
+  </channel>
+</rss>
